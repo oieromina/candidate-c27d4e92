@@ -1,0 +1,110 @@
+name: QA Tests
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: "Which tests to run"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+      user_id:
+        description: "Candidate user id"
+        required: false
+        default: "candidate-c27d4e92"
+
+jobs:
+  api-tests:
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.test_scope == 'all' || github.event.inputs.test_scope == 'api' }}
+    runs-on: ubuntu-latest
+    env:
+      USER_ID: ${{ github.event.inputs.user_id || 'candidate-c27d4e92' }}
+      BASE_URL: https://qae-assignment-tau.vercel.app
+      HEADLESS: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache virtualenv/pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            .venv
+          key: ${{ runner.os }}-py311-${{ hashFiles('requirements.txt') }}
+
+      - name: Make runner executable
+        run: chmod +x scripts/run_tests.sh
+
+      - name: Run API tests
+        run: ./scripts/run_tests.sh api
+
+      - name: Upload pytest results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-results
+          path: |
+            reports/
+            .pytest_cache/
+          if-no-files-found: ignore
+
+  ui-tests:
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.test_scope == 'all' || github.event.inputs.test_scope == 'ui' }}
+    runs-on: ubuntu-latest
+    env:
+      USER_ID: ${{ github.event.inputs.user_id || 'candidate-c27d4e92' }}
+      BASE_URL: https://qae-assignment-tau.vercel.app
+      HEADLESS: "true"
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache virtualenv/pip
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            .venv
+          key: ${{ runner.os }}-py311-${{ hashFiles('requirements.txt') }}
+
+      - name: Set up Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
+      - name: Print Chrome version
+        run: chrome --version
+
+      - name: Make runner executable
+        run: chmod +x scripts/run_tests.sh
+
+      - name: Run UI tests
+        run: ./scripts/run_tests.sh ui
+
+      - name: Upload UI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-test-results
+          path: |
+            reports/
+            screenshots/
+            .pytest_cache/
+          if-no-files-found: ignore
