@@ -26,6 +26,7 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.test_scope == 'all' || github.event.inputs.test_scope == 'api' }}
     runs-on: ubuntu-latest
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       USER_ID: ${{ github.event.inputs.user_id || 'candidate-c27d4e92' }}
       BASE_URL: https://qae-assignment-tau.vercel.app
       HEADLESS: "true"
