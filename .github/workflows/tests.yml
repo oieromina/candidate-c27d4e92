@@ -18,7 +18,7 @@ on:
           - ui
       user_id:
         description: "Candidate user id"
-        required: false
+        required: true
         default: "candidate-c27d4e92"
 
 jobs:
