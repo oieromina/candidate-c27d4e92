@@ -48,10 +48,10 @@ jobs:
           key: ${{ runner.os }}-py311-${{ hashFiles('requirements.txt') }}
 
       - name: Make runner executable
-        run: chmod +x scripts/run_tests.sh
+        run: chmod +x ../scripts/run_tests.sh
 
       - name: Run API tests
-        run: ./scripts/run_tests.sh api
+        run: ../scripts/run_tests.sh api
 
       - name: Upload pytest results
         if: always()
