@@ -2,12 +2,31 @@ name: Run Automation Tests
 
 on:
   push:
-    branches: [ "main", "master" ]
+    branches: ["main", "master"]
   pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: "Which tests to run"
+        required: false
+        default: "all"
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+      user_id:
+        description: "Candidate user id"
+        required: false
+        default: "candidate-c27d4e92"
 
 jobs:
   test:
     runs-on: ubuntu-latest
+
+    env:
+      PYTHONPATH: ${{ github.workspace }}
 
     steps:
       - name: Checkout repo
@@ -23,7 +42,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Select test scope
+        id: scope
+        run: |
+          if [ "${{ github.event.inputs.test_scope }}" == "api" ]; then
+            echo "TEST_PATH=tests/api" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.test_scope }}" == "ui" ]; then
+            echo "TEST_PATH=tests/ui" >> $GITHUB_ENV
+          else
+            echo "TEST_PATH=tests" >> $GITHUB_ENV
+          fi
+
       - name: Run pytest
-        run: pytest -v
-        env:
-          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          echo "Running tests in $TEST_PATH"
+          pytest $TEST_PATH -v
