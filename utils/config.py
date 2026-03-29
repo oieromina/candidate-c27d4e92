@@ -9,7 +9,7 @@ class Settings:
     user_id: str = os.getenv("USER_ID", "candidate-c27d4e92")
     base_url: str = os.getenv("BASE_URL", "https://qae-assignment-tau.vercel.app/")
     browser: str = os.getenv("BROWSER", "chrome")
-    headless: bool = os.getenv("HEADLESS", "false").lower() == "true"
+    headless: bool = os.getenv("HEADLESS", "true").lower() == "true"
     explicit_wait: int = int(os.getenv("EXPLICIT_WAIT", "10"))
 
     @property
