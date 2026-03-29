@@ -23,6 +23,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run pytest (loads conftest.py automatically)
-        run: |
-          pytest -v
+      - name: Run pytest
+        run: pytest -v
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+✅ What was fixed
