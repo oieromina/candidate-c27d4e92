@@ -1,10 +1,10 @@
 name: QA Tests
 
 on:
-  push:
-    branches: ["main", "master"]
-  pull_request:
-    branches: ["main", "master"]
+  #push:
+   # branches: ["main", "master"]
+  #pull_request:
+    #branches: ["main", "master"]
   workflow_dispatch:
     inputs:
       test_scope:
