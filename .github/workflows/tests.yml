@@ -49,6 +49,7 @@ jobs:
 
       - name: Make runner executable
         run: chmod +x scripts/run_tests.sh
+             scripts/run_tests.sh
 
       - name: Run API tests
         run: scripts/run_tests.sh api
